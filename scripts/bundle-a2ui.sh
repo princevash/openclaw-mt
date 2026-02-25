@@ -26,10 +26,12 @@ fi
 
 INPUT_PATHS=(
   "$ROOT_DIR/package.json"
-  "$ROOT_DIR/pnpm-lock.yaml"
   "$A2UI_RENDERER_DIR"
   "$A2UI_APP_DIR"
 )
+if [[ -f "$ROOT_DIR/pnpm-lock.yaml" ]]; then
+  INPUT_PATHS+=("$ROOT_DIR/pnpm-lock.yaml")
+fi
 
 compute_hash() {
   ROOT_DIR="$ROOT_DIR" node --input-type=module - "${INPUT_PATHS[@]}" <<'NODE'
