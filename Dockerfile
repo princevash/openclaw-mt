@@ -7,6 +7,7 @@ ENV PATH="/root/.bun/bin:${PATH}"
 RUN corepack enable
 
 WORKDIR /app
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ARG OPENCLAW_DOCKER_APT_PACKAGES=""
 RUN if [ -n "$OPENCLAW_DOCKER_APT_PACKAGES" ]; then \
@@ -27,10 +28,11 @@ RUN if [ -f pnpm-lock.yaml ]; then \
       pnpm install; \
     fi
 
-COPY . .
-RUN pnpm build
-# Force pnpm for UI build (Bun may fail on ARM/Synology architectures)
 ENV OPENCLAW_PREFER_PNPM=1
+# Force pnpm for UI build (Bun may fail on ARM/Synology architectures).
+# Keep command output full so Coolify logs include the real failure.
+COPY . .
+RUN pnpm build 2>&1 | tee /tmp/pnpm-build.log || (echo "pnpm build failed"; tail -n 200 /tmp/pnpm-build.log; exit 1)
 RUN pnpm ui:build
 
 ENV NODE_ENV=production
