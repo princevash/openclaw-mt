@@ -29,6 +29,7 @@ RUN if [ -f pnpm-lock.yaml ]; then \
     fi
 
 ENV OPENCLAW_PREFER_PNPM=1
+ENV OPENCLAW_A2UI_SKIP_MISSING=1
 # Force pnpm for UI build (Bun may fail on ARM/Synology architectures).
 # Keep command output full so Coolify logs include the real failure.
 COPY . .
